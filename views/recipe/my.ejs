@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <div class="page-header">
+        <h2><%= t('my_recipes') %></h2>
+        <a href="/recipes/create" class="btn"><%= t('new_recipe') %></a>
+    </div>
+
+    <div class="cards-grid">
+        <% recipes.forEach(recipe => { %>
+            <div class="recipe-card">
+                <div class="card-body">
+                    <h3><a href="/recipes/<%= recipe.id %>"><%= recipe.title %></a></h3>
+                    <p><%= recipe.isPublic ? t('public') : t('private') %></p>
+                    <p><%= t('posted') %>: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
+                    <a href="/recipes/<%= recipe.id %>/edit"><%= t('edit') %></a>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <% if (recipes.length === 0) { %>
+        <p><%= t('no_recipes_yet') %> <a href="/recipes/create"><%= t('create_one') %></a></p>
+    <% } %>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2><%= recipe.title %></h2>
+            <p><%= t('author') %>: <%= recipe.user.name %> &nbsp;|&nbsp; <%= t('category') %>: <%= recipe.category.name %> &nbsp;|&nbsp; <%= recipe.isPublic ? t('public') : t('private') %> &nbsp;|&nbsp; <%= t('posted') %>: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
+        </div>
+        <% if (user && (user.id === recipe.userId || user.role === 'admin')) { %>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+                <a href="/recipes/<%= recipe.id %>/edit" class="btn"><%= t('edit') %></a>
+                <form method="POST" action="/recipes/<%= recipe.id %>/delete" style="display:inline;">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Delete this recipe?')"><%= t('delete') %></button>
+                </form>
+            </div>
+        <% } %>
+    </div>
+
+    <% if (recipe.imagePath) { %>
+        <img src="<%= recipe.imagePath %>" alt="<%= recipe.title %>" style="max-width:480px;">
+    <% } else { %>
+        <img src="/img/placeholder.png" alt="No image" style="max-width:480px;">
+    <% } %>
+
+    <h3><%= t('ingredients') %></h3>
+    <ul>
+        <% recipe.ingredients.forEach(ing => { %>
+            <li><%= ing.amount %> <%= ing.unit %> <%= ing.name %></li>
+        <% }) %>
+    </ul>
+
+    <h3><%= t('description') %></h3>
+    <p><%= recipe.description %></p>
+
+    <hr>
+
+    <div class="section-card">
+        <h3><%= t('comments') %></h3>
+
+        <% if (recipe.comments.length === 0) { %>
+            <p><%= t('no_comments') %></p>
+        <% } %>
+
+        <% recipe.comments.forEach(comment => { %>
+            <div class="comment">
+                <strong><%= comment.user.name %></strong>
+                <span style="color:var(--muted); font-size:0.82rem; margin-left:0.5rem;">
+                    <%= new Date(comment.createdAt).toLocaleDateString() %>
+                </span>
+                <p><%= comment.body %></p>
+                <% if (user && (user.id === comment.userId || user.role === 'admin')) { %>
+                    <form method="POST" action="/recipes/<%= recipe.id %>/comments/<%= comment.id %>/delete" style="display:inline;">
+                        <button type="submit"><%= t('delete') %></button>
+                    </form>
+                <% } %>
+            </div>
+        <% }) %>
+
+        <% if (user) { %>
+            <h4 style="margin-top:1.25rem;"><%= t('add_comment') %></h4>
+            <form method="POST" action="/recipes/<%= recipe.id %>/comments">
+                <textarea name="body" rows="3" placeholder="<%= t('write_comment') %>" required></textarea>
+                <button type="submit"><%= t('post_comment') %></button>
+            </form>
+        <% } else { %>
+            <p style="margin-top:1rem;"><a href="/auth/login"><%= t('login') %></a> <%= t('login_to_comment') %></p>
+        <% } %>
+    </div>
+</div>
+</body>
+</html>

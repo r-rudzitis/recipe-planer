@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <h2><%= recipe ? t('save_changes') : t('new_recipe') %></h2>
+
+    <% if (error) { %>
+        <p class="error"><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="<%= recipe ? '/recipes/' + recipe.id : '/recipes' %>" enctype="multipart/form-data">
+        <label><%= t('title') %></label>
+        <input type="text" name="title" value="<%= recipe ? recipe.title : '' %>" required>
+
+        <label><%= t('description') %></label>
+        <textarea name="description"><%= recipe ? recipe.description : '' %></textarea>
+
+        <label><%= t('image') %></label>
+        <input type="file" name="image" accept="image/*">
+        <% if (recipe && recipe.imagePath) { %>
+            <p><%= t('current_image') %>: <img src="<%= recipe.imagePath %>" style="max-width:150px;"></p>
+        <% } %>
+
+        <label><%= t('category') %></label>
+        <select name="categoryId" required>
+            <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= recipe && recipe.categoryId === cat.id ? 'selected' : '' %>>
+                    <%= cat.name %>
+                </option>
+            <% }) %>
+        </select>
+
+        <label style="display:flex; align-items:center; text-transform:none; font-size:0.9rem; margin-top:1rem;">
+            <input type="checkbox" name="isPublic" <%= !recipe || recipe.isPublic ? 'checked' : '' %>>
+            <%= t('public') %>
+        </label>
+
+        <h3 style="margin-top:1.5rem;"><%= t('ingredients') %></h3>
+        <div id="ingredients">
+            <% if (recipe && recipe.ingredients.length > 0) { %>
+                <% recipe.ingredients.forEach(ing => { %>
+                    <div class="ingredient-row">
+                        <input type="text"   name="ingredientName[]"   placeholder="<%= t('name') %>"   value="<%= ing.name %>">
+                        <input type="text"   name="ingredientAmount[]" placeholder="<%= t('amount') %>" value="<%= ing.amount %>">
+                        <input type="text"   name="ingredientUnit[]"   placeholder="<%= t('unit') %>"   value="<%= ing.unit || '' %>">
+                        <button type="button" onclick="this.parentElement.remove()"><%= t('remove') %></button>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="ingredient-row">
+                    <input type="text" name="ingredientName[]"   placeholder="<%= t('name') %>">
+                    <input type="text" name="ingredientAmount[]" placeholder="<%= t('amount') %>">
+                    <input type="text" name="ingredientUnit[]"   placeholder="<%= t('unit') %>">
+                    <button type="button" onclick="this.parentElement.remove()"><%= t('remove') %></button>
+                </div>
+            <% } %>
+        </div>
+        <button type="button" onclick="addIngredient()"><%= t('add_ingredient') %></button>
+
+        <br><br>
+        <button type="submit"><%= recipe ? t('save_changes') : t('create_recipe') %></button>
+        <a href="/" class="btn" style="background:transparent; color:var(--red); border:1.5px solid var(--red-border); margin-left:0.5rem;"><%= t('cancel') %></a>
+    </form>
+</div>
+
+<script>
+    function addIngredient() {
+        const div = document.createElement('div');
+        div.className = 'ingredient-row';
+        div.innerHTML = `
+            <input type="text" name="ingredientName[]"   placeholder="Name">
+            <input type="text" name="ingredientAmount[]" placeholder="Amount">
+            <input type="text" name="ingredientUnit[]"   placeholder="Unit">
+            <button type="button" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        document.getElementById('ingredients').appendChild(div);
+    }
+</script>
+</body>
+</html>

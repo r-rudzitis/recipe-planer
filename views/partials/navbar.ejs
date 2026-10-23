@@ -1,0 +1,19 @@
+<nav>
+    <a href="/"><%= t('home') %></a>
+    <a href="/mealplans/browse"><%= t('meal_plans') %></a>
+    <% if (user) { %>
+        <a href="/recipes/my"><%= t('my_recipes') %></a>
+        <a href="/mealplans"><%= t('my_meal_plans') %></a>
+        <a href="/recipes/create"><%= t('new_recipe') %></a>
+        <a href="/external/search"><%= t('import_recipes') %></a>
+        <% if (user.role === 'admin') { %>
+            <a href="/admin"><%= t('admin') %></a>
+            <a href="/categories"><%= t('categories') %></a>
+        <% } %>
+        <a href="/auth/logout"><%= t('logout') %></a>
+    <% } else { %>
+        <a href="/auth/login"><%= t('login') %></a>
+        <a href="/auth/register"><%= t('register') %></a>
+    <% } %>
+    <a href="/lang/en">EN</a> | <a href="/lang/lv">LV</a>
+</nav>

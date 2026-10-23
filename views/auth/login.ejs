@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="flag-stripe"><span></span><span></span><span></span></div>
+        <h2><%= t('login') %></h2>
+        <% if (error) { %>
+            <p class="error"><%= error %></p>
+        <% } %>
+        <form method="POST" action="/auth/login">
+            <label><%= t('email') %></label>
+            <input type="email" name="email" required>
+
+            <label><%= t('password') %></label>
+            <input type="password" name="password" required>
+
+            <button type="submit"><%= t('login') %></button>
+        </form>
+        <p><%= t('no_account') %> <a href="/auth/register"><%= t('register') %></a></p>
+    </div>
+</div>
+</body>
+</html>

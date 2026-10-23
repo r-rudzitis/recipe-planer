@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2><%= mealPlan.title %></h2>
+            <p><%= t('posted') %>: <%= new Date(mealPlan.createdAt).toLocaleDateString() %> &nbsp;|&nbsp; <%= t('by') %>: <%= mealPlan.user.name %> &nbsp;|&nbsp; <%= mealPlan.isPublic ? t('public') : t('private') %></p>
+        </div>
+        <% if (isOwner) { %>
+            <a href="/mealplans/<%= mealPlan.id %>/edit" class="btn"><%= t('edit') %></a>
+        <% } %>
+    </div>
+
+    <h3><%= t('weekly_plan') %></h3>
+    <table>
+        <thead>
+            <tr>
+                <% days.forEach(day => { %>
+                    <th><%= t(day) %></th>
+                <% }) %>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <% days.forEach((day, i) => { %>
+                    <td>
+                        <% mealPlan.recipes.filter(r => r.dayOfWeek === i).forEach(entry => { %>
+                            <div>
+                                <a href="/recipes/<%= entry.recipe.id %>"><%= entry.recipe.title %></a>
+                            </div>
+                        <% }) %>
+                    </td>
+                <% }) %>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <a href="<%= back %>"><%= t('back_to_plans') %></a>
+</div>
+</body>
+</html>

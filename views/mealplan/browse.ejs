@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <h2><%= t('public_meal_plans') %></h2>
+
+    <% if (mealPlans.length === 0) { %>
+        <p><%= t('no_public_plans') %></p>
+    <% } %>
+
+    <div class="meal-cards-grid">
+        <% mealPlans.forEach(plan => { %>
+            <div class="meal-card">
+                <h4><a href="/mealplans/<%= plan.id %>"><%= plan.title %></a></h4>
+                <p><%= t('posted') %>: <%= new Date(plan.createdAt).toLocaleDateString() %></p>
+                <p><%= t('by') %>: <%= plan.user.name %></p>
+            </div>
+        <% }) %>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <div class="page-header">
+        <h2><%= t('manage_categories') %></h2>
+        <a href="/" class="btn" style="background:transparent; color:var(--red); border:1.5px solid var(--red-border);"><%= t('back_to_home') %></a>
+    </div>
+
+    <div class="section-card" style="margin-bottom:2rem;">
+        <h3><%= t('add_category') %></h3>
+        <form method="POST" action="/categories">
+            <label><%= t('category_name') %></label>
+            <input type="text" name="name" placeholder="<%= t('category_name') %>" required>
+            <button type="submit"><%= t('add') %></button>
+        </form>
+    </div>
+
+    <h3><%= t('existing_categories') %></h3>
+    <% if (categories.length === 0) { %>
+        <p><%= t('no_categories') %></p>
+    <% } %>
+    <% categories.forEach(cat => { %>
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem;">
+            <form method="POST" action="/categories/<%= cat.id %>">
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="text" name="name" value="<%= cat.name %>" required style="margin-bottom:0;">
+                    <button type="submit" style="margin-top:0;"><%= t('rename') %></button>
+                </div>
+            </form>
+            <form method="POST" action="/categories/<%= cat.id %>/delete">
+                <button type="submit" class="btn-danger" style="margin-top:0;" onclick="return confirm('Delete this category?')"><%= t('delete') %></button>
+            </form>
+        </div>
+    <% }) %>
+</div>
+</body>
+</html>

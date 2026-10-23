@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <h2><%= t('my_meal_plans') %></h2>
+
+    <div class="section-card" style="margin-bottom:2rem;">
+        <h3><%= t('create_new_plan') %></h3>
+        <form method="POST" action="/mealplans">
+            <label><%= t('plan_title') %></label>
+            <input type="text" name="title" placeholder="<%= t('plan_title') %>" required>
+            <label style="display:flex; align-items:center; text-transform:none; font-size:0.9rem; margin-top:0.75rem;">
+                <input type="checkbox" name="isPublic"> <%= t('public') %>
+            </label>
+            <button type="submit"><%= t('create') %></button>
+        </form>
+    </div>
+
+    <h3><%= t('my_plans') %></h3>
+    <% if (mealPlans.length === 0) { %>
+        <p><%= t('no_plans_yet') %></p>
+    <% } %>
+    <div class="meal-cards-grid">
+        <% mealPlans.forEach(plan => { %>
+            <div class="meal-card">
+                <h4><a href="/mealplans/<%= plan.id %>"><%= plan.title %></a></h4>
+                <p><%= t('posted') %>: <%= new Date(plan.createdAt).toLocaleDateString() %></p>
+                <a href="/mealplans/<%= plan.id %>/edit"><%= t('edit') %></a>
+                <form method="POST" action="/mealplans/<%= plan.id %>/delete" style="display:inline;">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Delete this plan?')"><%= t('delete') %></button>
+                </form>
+            </div>
+        <% }) %>
+    </div>
+</div>
+</body>
+</html>

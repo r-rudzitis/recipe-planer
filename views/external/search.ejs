@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h2><%= t('external_search_title') %></h2>
+            <p style="color:var(--muted);"><%= t('external_search_subtitle') %></p>
+        </div>
+    </div>
+
+    <% if (error) { %>
+        <p style="color:var(--danger, #c0392b); margin-bottom:1rem;"><%= error %></p>
+    <% } %>
+
+    <form method="GET" action="/external/search" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+        <input type="text" name="q" value="<%= query %>" placeholder="<%= t('external_query_placeholder') %>" style="flex:1; min-width:180px;">
+        <input type="text" name="ingredients" value="<%= ingredients %>" placeholder="<%= t('external_ingredients_placeholder') %>" style="flex:1; min-width:180px;">
+        <button type="submit" class="btn"><%= t('search') %></button>
+    </form>
+
+    <% if (query || ingredients) { %>
+        <% if (results.length === 0) { %>
+            <p><%= t('no_external_results') %></p>
+        <% } else { %>
+            <div class="cards-grid">
+                <% results.forEach(r => { %>
+                    <div class="recipe-card">
+                        <% if (r.image) { %>
+                            <img src="<%= r.image %>" alt="<%= r.title %>" style="width:100%; height:160px; object-fit:cover;">
+                        <% } %>
+                        <div class="card-body">
+                            <h3><%= r.title %></h3>
+                            <form method="POST" action="/external/import/<%= r.id %>">
+                                <button type="submit" class="btn"><%= t('external_import') %></button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    <% } %>
+</div>
+</body>
+</html>

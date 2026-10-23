@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <h2><%= t('edit_plan') %>: <%= mealPlan.title %></h2>
+
+    <form method="POST" action="/mealplans/<%= mealPlan.id %>/edit" onsubmit="prepareSubmit()">
+        <input type="hidden" id="recipesJson" name="recipesJson">
+
+        <div class="section-card" style="margin-bottom:2rem;">
+            <h3><%= t('plan_title') %></h3>
+            <input type="text" name="title" value="<%= mealPlan.title %>" required>
+            <label style="display:flex; align-items:center; text-transform:none; font-size:0.9rem; margin-top:0.75rem;">
+                <input type="checkbox" name="isPublic" <%= mealPlan.isPublic ? 'checked' : '' %>> <%= t('public') %>
+            </label>
+        </div>
+
+        <div class="section-card" style="margin-bottom:2rem;">
+            <h3><%= t('add_recipe_to_plan') %></h3>
+            <label><%= t('select_recipe') %></label>
+            <select id="recipeSelect">
+                <option value=""><%= t('select_recipe') %></option>
+                <% recipes.forEach(r => { %>
+                    <option value="<%= r.id %>" data-title="<%= r.title %>" data-public="<%= r.isPublic %>">
+                        <%= r.title %> (<%= r.isPublic ? t('public') : t('private') %>)
+                    </option>
+                <% }) %>
+            </select>
+            <label><%= t('day') %></label>
+            <select id="daySelect">
+                <% days.forEach((day, i) => { %>
+                    <option value="<%= i %>"><%= t(day) %></option>
+                <% }) %>
+            </select>
+            <button type="button" onclick="addRecipe()" style="margin-top:1rem;"><%= t('add') %></button>
+        </div>
+
+        <h3><%= t('weekly_plan') %></h3>
+        <div id="weekly-grid"></div>
+
+        <div style="display:flex; gap:0.75rem; margin-top:1.5rem; align-items:center;">
+            <button type="submit"><%= t('save_changes') %></button>
+            <a href="/mealplans/<%= mealPlan.id %>" class="btn-cancel"><%= t('cancel') %></a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Current state — initialised from the database, only saved on form submit
+    let planRecipes = <%- JSON.stringify(mealPlan.recipes.map(r => ({
+        recipeId: r.recipeId,
+        recipeName: r.recipe.title,
+        dayOfWeek: r.dayOfWeek
+    }))) %>;
+
+    const dayNames = [<% days.forEach((day, i) => { %>'<%= t(day) %>'<%= i < days.length - 1 ? ',' : '' %><% }) %>];
+
+    function renderGrid() {
+        let html = '<table><thead><tr>';
+        dayNames.forEach(d => { html += '<th>' + d + '</th>'; });
+        html += '</tr></thead><tbody><tr>';
+        dayNames.forEach(function(d, i) {
+            html += '<td>';
+            planRecipes.forEach(function(r, idx) {
+                if (r.dayOfWeek === i) {
+                    html += '<div>'
+                          + '<a href="/recipes/' + r.recipeId + '">' + r.recipeName + '</a> '
+                          + '<button type="button" onclick="removeRecipe(' + idx + ')">&#x2715;</button>'
+                          + '</div>';
+                }
+            });
+            html += '</td>';
+        });
+        html += '</tr></tbody></table>';
+        document.getElementById('weekly-grid').innerHTML = html;
+    }
+
+    function addRecipe() {
+        const sel = document.getElementById('recipeSelect');
+        const day = parseInt(document.getElementById('daySelect').value);
+        const recipeId = parseInt(sel.value);
+        if (!recipeId) return;
+        const opt = sel.options[sel.selectedIndex];
+        planRecipes.push({
+            recipeId: recipeId,
+            recipeName: opt.dataset.title,
+            dayOfWeek: day
+        });
+        sel.value = '';
+        renderGrid();
+    }
+
+    function removeRecipe(idx) {
+        planRecipes.splice(idx, 1);
+        renderGrid();
+    }
+
+    function prepareSubmit() {
+        document.getElementById('recipesJson').value = JSON.stringify(planRecipes);
+    }
+
+    renderGrid();
+</script>
+</body>
+</html>

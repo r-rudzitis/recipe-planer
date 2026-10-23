@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String    @default("user")
+  createdAt    DateTime  @default(now())
+
+  recipes    Recipe[]
+  mealPlans  MealPlan[]
+  comments   Comment[]
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  recipes Recipe[]
+}
+
+model Recipe {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  imagePath   String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  userId     Int
+  categoryId Int
+
+  user        User             @relation(fields: [userId], references: [id])
+  category    Category         @relation(fields: [categoryId], references: [id])
+  ingredients Ingredient[]
+  mealPlans   MealPlanRecipe[]
+  comments    Comment[]
+}
+
+model Ingredient {
+  id       Int     @id @default(autoincrement())
+  name     String
+  amount   String
+  unit     String?
+  recipeId Int
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model MealPlan {
+  id        Int      @id @default(autoincrement())
+  title     String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId  Int
+  user    User             @relation(fields: [userId], references: [id])
+  recipes MealPlanRecipe[]
+}
+
+model MealPlanRecipe {
+  id        Int @id @default(autoincrement())
+  dayOfWeek Int @default(0)
+
+  mealPlanId Int
+  recipeId   Int
+
+  mealPlan MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  userId   Int
+  recipeId Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}

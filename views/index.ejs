@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/navbar') %>
+
+<div class="container">
+    <form method="GET" action="/">
+        <input type="text" name="search" placeholder="<%= t('search') %>" value="<%= search %>">
+        <select name="categoryId">
+            <option value=""><%= t('all') %></option>
+            <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= cat.id == categoryId ? 'selected' : '' %>>
+                    <%= cat.name %>
+                </option>
+            <% }) %>
+        </select>
+        <button type="submit"><%= t('search') %></button>
+    </form>
+
+    <div class="cards-grid">
+        <% recipes.forEach(recipe => { %>
+            <a href="/recipes/<%= recipe.id %>" class="recipe-card">
+                <div class="card-body">
+                    <h3><%= recipe.title %></h3>
+                    <p><%= t('category') %>: <%= recipe.category.name %></p>
+                    <p><%= t('by') %>: <%= recipe.user.name %></p>
+                    <p><%= t('posted') %>: <%= new Date(recipe.createdAt).toLocaleDateString() %></p>
+                </div>
+            </a>
+        <% }) %>
+    </div>
+    <% if (recipes.length === 0) { %>
+        <p><%= t('no_recipes_found') %></p>
+    <% } %>
+</div>
+</body>
+</html>

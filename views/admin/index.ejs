@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<%- include('../partials/navbar') %>
+
+<div class="container">
+    <h2><%= t('admin_panel') %></h2>
+
+    <h3><%= t('users') %> (<%= users.length %>)</h3>
+    <table style="margin-bottom:2rem;">
+        <thead>
+        <tr>
+            <th><%= t('id') %></th>
+            <th><%= t('name') %></th>
+            <th><%= t('email') %></th>
+            <th><%= t('role') %></th>
+            <th><%= t('joined') %></th>
+            <th><%= t('actions') %></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% users.forEach(u => { %>
+            <tr>
+                <td><%= u.id %></td>
+                <td><%= u.name %></td>
+                <td><%= u.email %></td>
+                <td><%= u.role %></td>
+                <td><%= new Date(u.createdAt).toLocaleDateString() %></td>
+                <td>
+                    <% if (u.id !== user.id) { %>
+                        <form method="POST" action="/admin/users/<%= u.id %>/delete" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Delete user <%= u.name %>?')"><%= t('delete') %></button>
+                        </form>
+                    <% } else { %>
+                        <span style="color:var(--muted);"><%= t('you') %></span>
+                    <% } %>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+
+    <h3><%= t('recipes') %> (<%= recipes.length %>)</h3>
+    <table style="margin-bottom:2rem;">
+        <thead>
+        <tr>
+            <th><%= t('id') %></th>
+            <th><%= t('title') %></th>
+            <th><%= t('author') %></th>
+            <th><%= t('category') %></th>
+            <th><%= t('visibility') %></th>
+            <th><%= t('actions') %></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% recipes.forEach(r => { %>
+            <tr>
+                <td><%= r.id %></td>
+                <td><a href="/recipes/<%= r.id %>"><%= r.title %></a></td>
+                <td><%= r.user.name %></td>
+                <td><%= r.category.name %></td>
+                <td><%= r.isPublic ? t('public') : t('private') %></td>
+                <td>
+                    <form method="POST" action="/admin/recipes/<%= r.id %>/delete" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Delete recipe <%= r.title %>?')"><%= t('delete') %></button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+
+    <h3><%= t('comments') %> (<%= comments.length %>)</h3>
+    <table>
+        <thead>
+        <tr>
+            <th><%= t('id') %></th>
+            <th><%= t('author') %></th>
+            <th><%= t('recipes') %></th>
+            <th><%= t('body') %></th>
+            <th><%= t('date') %></th>
+            <th><%= t('actions') %></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% comments.forEach(c => { %>
+            <tr>
+                <td><%= c.id %></td>
+                <td><%= c.user.name %></td>
+                <td><a href="/recipes/<%= c.recipe.id %>"><%= c.recipe.title %></a></td>
+                <td><%= c.body %></td>
+                <td><%= new Date(c.createdAt).toLocaleDateString() %></td>
+                <td>
+                    <form method="POST" action="/admin/comments/<%= c.id %>/delete" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Delete this comment?')"><%= t('delete') %></button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
